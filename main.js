@@ -1,13 +1,5 @@
-var cy = cytoscape({
-    container: document.getElementById('cy'),
-    elements: [
-        { data: { id: 'a' } },
-        { data: { id: 'b' } },
-        {
-            data: {
-                id: 'ab',
-                source: 'a',
-                target: 'b'
-            }
-        }]
-});
+function construct() {
+    addFirstNode("nm0000115");
+    expandOnNode("tt5460530")
+
+}
