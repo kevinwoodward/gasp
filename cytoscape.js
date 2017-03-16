@@ -17138,7 +17138,7 @@ CRp.drawLayeredElements = function( context, eles, pxRatio, extent ){
 
       context.drawImage( layer.canvas, bb.x1, bb.y1, bb.w, bb.h );
     }
-  } else { // fall back on plain caching if no layers
+  } else { // fall back on plain caching if no layerScale
     r.drawCachedElements( context, eles, pxRatio, extent );
   }
 };
@@ -19290,7 +19290,7 @@ CRp.bufferCanvasImage = function( options ){
 
   var buffCxt = buffCanvas.getContext( '2d' );
 
-  // Rasterize the layers, but only if container has nonzero size
+  // Rasterize the layerScale, but only if container has nonzero size
   if( width > 0 && height > 0 ){
 
     buffCxt.clearRect( 0, 0, width, height );
@@ -19500,21 +19500,21 @@ var Heap = _dereq_( '../../../heap' );
 var is = _dereq_( '../../../is' );
 var defs = _dereq_( './texture-cache-defs' );
 
-var defNumLayers = 1; // default number of layers to use
+var defNumLayers = 1; // default number of layerScale to use
 var minLvl = -4; // when scaling smaller than that we don't need to re-render
 var maxLvl = 2; // when larger than this scale just render directly (caching is not helpful)
 var maxZoom = 3.99; // beyond this zoom level, layered textures are not used
 var deqRedrawThreshold = 50; // time to batch redraws together from dequeueing to allow more dequeueing calcs to happen in the meanwhile
 var refineEleDebounceTime = 50; // time to debounce sharper ele texture updates
-var disableEleImgSmoothing = true; // when drawing eles on layers from an ele cache ; crisper and more performant when true
+var disableEleImgSmoothing = true; // when drawing eles on layerScale from an ele cache ; crisper and more performant when true
 var deqCost = 0.15; // % of add'l rendering cost allowed for dequeuing ele caches each frame
 var deqAvgCost = 0.1; // % of add'l rendering cost compared to average overall redraw time
 var deqNoDrawCost = 0.9; // % of avg frame time that can be used for dequeueing when not drawing
 var deqFastCost = 0.9; // % of frame time to be used when >60fps
 var maxDeqSize = 1; // number of eles to dequeue and render at higher texture in each batch
 var invalidThreshold = 250; // time threshold for disabling b/c of invalidations
-var maxLayerArea = 4000 * 4000; // layers can't be bigger than this
-var alwaysQueue = true; // never draw all the layers in a level on a frame; draw directly until all dequeued
+var maxLayerArea = 4000 * 4000; // layerScale can't be bigger than this
+var alwaysQueue = true; // never draw all the layerScale in a level on a frame; draw directly until all dequeued
 var useHighQualityEleTxrReqs = true; // whether to use high quality ele txr requests (generally faster and cheaper in the longterm)
 
 var useEleTxrCaching = true; // whether to use individual ele texture caching underneath this cache
@@ -19606,7 +19606,7 @@ LTCp.getLayers = function( eles, pxRatio, lvl ){
 
   self.firstGet = false;
 
-  // log('--\nget layers with %s eles', eles.length);
+  // log('--\nget layerScale with %s eles', eles.length);
   //log eles.map(function(ele){ return ele.id() }) );
 
   if( lvl == null ){
@@ -19650,7 +19650,7 @@ LTCp.getLayers = function( eles, pxRatio, lvl ){
     checkLvls( +1 );
     checkLvls( -1 );
 
-    // remove the invalid layers; they will be replaced as needed later in this function
+    // remove the invalid layerScale; they will be replaced as needed later in this function
     for( var i = layers.length - 1; i >= 0; i-- ){
       var layer = layers[i];
 
@@ -19667,7 +19667,7 @@ LTCp.getLayers = function( eles, pxRatio, lvl ){
     checkTempLevels();
 
   } else {
-    // log('level complete, using existing layers\n--');
+    // log('level complete, using existing layerScale\n--');
     return layers;
   }
 
@@ -19715,11 +19715,11 @@ LTCp.getLayers = function( eles, pxRatio, lvl ){
   };
 
   if( self.skipping && !firstGet ){
-    // log('skip layers');
+    // log('skip layerScale');
     return null;
   }
 
-  // log('do layers');
+  // log('do layerScale');
 
   var layer = null;
   var maxElesPerLayer = eles.length / defNumLayers;
@@ -19750,7 +19750,7 @@ LTCp.getLayers = function( eles, pxRatio, lvl ){
 
       layer = makeLayer({ insert: true, after: layer });
 
-      // if now layer can be built then we can't use layers at this level
+      // if now layer can be built then we can't use layerScale at this level
       if( !layer ){ return null; }
 
       // log('new layer with id %s', layer.id);
@@ -19896,7 +19896,7 @@ LTCp.updateElementsInLayers = function( eles, update ){
   var self = this;
   var isEles = is.element( eles[0] );
 
-  // collect udpated elements (cascaded from the layers) and update each
+  // collect udpated elements (cascaded from the layerScale) and update each
   // layer itself along the way
   for( var i = 0; i < eles.length; i++ ){
     var req = isEles ? null : eles[i];

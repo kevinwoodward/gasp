@@ -1,29 +1,30 @@
-var cy = cytoscape({
+var cy = window.cy = cytoscape({
     container: document.getElementById('cy'),
-    elements: [],
-
     style: [ // the stylesheet for the graph
         {
             selector: 'node',
             style: {
                 'background-color': '#000',
-                'label': 'data(id)'
+                'label': 'data(name)',
+                'min-zoomed-font-size': '8'
             }
         },
 
         {
             selector: 'edge',
             style: {
-                'width': 3,
+                'content': 'data(id)',
+                'width': 1,
                 'line-color': '#666',
                 'target-arrow-color': '#ccc',
-                'target-arrow-shape': 'triangle'
+                'target-arrow-shape': 'triangle',
+                'text-wrap': 'wrap'
             }
         }
     ],
 
-    layout: {
-        name: 'breadthfirst',
-        animate: true
-    }
+    elements: []
+
 });
+
+
