@@ -1,22 +1,20 @@
-var layerScale = 5;
-var layerCount = 0;
-var filmsPerActor = 10; //expansion edges per node
-var filmMethod = "random";
-var rootNodes = [
-    "nm0000115",
-    "nm0000434",
-    "nm0597388",
-    "nm0175834",
-    "nm0010736"
-];
 function construct() {
-    //FLOW: add actors(roots), {get n films per actor. For each film, add unique actor.} iterate on {}
+    rootNodes = $.map($('#initialValues')[0].value.split(','), $.trim);
+    filmsPerActor = $('#edgeNum')[0].value;
+    layerScale = $('#scaleNum')[0].value;
+    filmMethod = $('input[name="filmChoice"]:checked').val();
     setLayout();
     for(var n = 0; n < rootNodes.length; n++) {
         addRootNodes(rootNodes[n]);
-        layerCount = 0;
     }
-    //cy.renderer().data.lyrTxrCache.invalidateElements(cy.elements);
-    //cy.renderer().data. eleTxrCache.invalidateElement(cy.elements);
-    //getResourceIdByName("nicolas cage");
+    cy.on('tap', 'node', function (evt) {
+        console.log(evt.cyTarget.id()); //TODO: add qtip here
+        lastSelected = evt.cyTarget.id();
+        //var win = window.open("http://www.imdb.com/name/" + evt.cyTarget.id() + "/");
+    });
+    cy.on('tap', 'edge', function (evt) {
+        console.log(evt.cyTarget.id()); //TODO: add qtip here
+        var win = window.open("http://www.imdb.com/title/" + evt.cyTarget.id() + "/");
+    });
+
 }

@@ -6,9 +6,26 @@
     <script src="jquery-3.1.1.min.js"></script>
 </head>
 <body>
+    <div>
+        <div>
+            <input id="initialValues" type="text" placeholder="Input comma separated actor tags here">
+            <button id="go" onclick="construct();">Create</button> Don't know what to enter? Try this: nm0000115, nm0000434, nm0000158<br>
+            How do you want to select films from known actors?
+            <form style="display: inline; background: lightgray;">
+                <input type="radio" name="filmChoice" value="random" checked> Randomly
+                <input type="radio" name="filmChoice" value="new"> Newer
+                <input type="radio" name="filmChoice" value="old"> Older
+            </form><br>
+            How many branching edges per node? <input id="edgeNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="3"><br>
+            Graph scale factor: <input id="scaleNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value = "20">
+        </div>
+
+
+    </div>
     <div id='cy'></div>
     <script src="helpers.js"></script>
     <script src="graph.js"></script>
-    <script src="main.js" onload=construct();></script>
+    <script src="defs.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

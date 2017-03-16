@@ -1,5 +1,6 @@
 //id is the unique value, so associated to nm0000115 tag.
 function addNode(response, edge) {
+    layerCount++;
     var nodeObj = {
         group: "nodes",
         data: {
@@ -14,13 +15,14 @@ function addNode(response, edge) {
     if(edge != undefined) {
         console.log(edge);
         addEdge(edge.id, edge.name, edge.source, edge.target);
+        setLayout();
     }
     //actorsArray.push(nodeObj);
     if(layerCount < layerScale) {
         expandOnNode1(response);
-        layerCount++;
+        console.log(layerCount);
     } else {
-        setLayout();
+        return;
     }
 }
 
