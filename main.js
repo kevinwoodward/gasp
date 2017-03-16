@@ -1,4 +1,11 @@
 function construct() {
+    if($.active != 0) {
+        alert("Please wait for the current graph to complete, or refresh the page");
+        return;
+    }
+    layerCount = 0;
+    cy.remove(cy.elements());
+    console.log(cy)
     rootNodes = $.map($('#initialValues')[0].value.split(','), $.trim);
     filmsPerActor = $('#edgeNum')[0].value;
     layerScale = $('#scaleNum')[0].value;

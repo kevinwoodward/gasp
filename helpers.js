@@ -9,19 +9,18 @@ function addNode(response, edge) {
             films: response.data.filmography,
             hitCount: 1
         },
-        position: { x: (screen.width)*Math.random(), y: (screen.height)*Math.random()}
+        position: { x: (screen.width)/2, y: (screen.height)/2}
     };
     cy.add(nodeObj);
     if(edge != undefined) {
-        console.log(edge);
         addEdge(edge.id, edge.name, edge.source, edge.target);
         setLayout();
     }
     //actorsArray.push(nodeObj);
     if(layerCount < layerScale) {
         expandOnNode1(response);
-        console.log(layerCount);
     } else {
+        updateSub();
         return;
     }
 }
@@ -127,7 +126,6 @@ function getNewActorData(newActorID, sourceActorResponse, filmResponse) {
         success: function(response) {
             if(sourceActorResponse.data.id == response.data.id) {
                 cy.getElementById(response.data.id).hitCount += 1;
-                console.log("upping hitcount for " + response.data.id); //TODO: add cross linking here?
             } else {
                 //console.log(response);
 
@@ -155,6 +153,11 @@ function addNewNodeAndEdge(newActorResponse, sourceActorResponse, filmResponse) 
     addNode(newActorResponse, edgeObj);
 
     //addEdge(filmResponse.data.id, filmResponse.data.title, sourceActorResponse.data.id, newActorResponse.data.id);
+}
+
+function updateSub() {
+    console.log($.active);
+    $('button').prop('disabled', $.active > 1);
 }
 
 function setLayout() {
