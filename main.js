@@ -10,6 +10,7 @@ function construct() {
     filmsPerActor = $('#edgeNum')[0].value;
     layerScale = $('#scaleNum')[0].value;
     filmMethod = $('input[name="filmChoice"]:checked').val();
+    animateGraph = $("#animate").is(':checked');
     setLayout();
     for(var n = 0; n < rootNodes.length; n++) {
         addRootNodes(rootNodes[n]);

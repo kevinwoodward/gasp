@@ -17,12 +17,13 @@
                 <input type="radio" name="filmChoice" value="old"> Older
             </form><br>
             Graph layout:
-            <form style="display: inline; background: lightgray;" onclick="setLayout();">
+            <form style="display: inline; background: lightgray;" onclick="recenter();">
                 <input type="radio" name="gLayout" value="concentric" checked> Concentric
                 <input type="radio" name="gLayout" value="circular"> Circular
                 <input type="radio" name="gLayout" value="grid"> Grid
                 <input type="radio" name="gLayout" value="breadthfirst"> Breadthfirst
             </form><br>
+            Animate Graph: <input id="animate" type="checkbox" onclick="setLayout();" checked="checked"><br>
             How many branching edges per node? <input id="edgeNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="3"><br>
             Graph scale factor: <input id="scaleNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value = "20"><br>
             <button onclick="recenter();">Recenter</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="getStats();">Statistics on current graph</button>

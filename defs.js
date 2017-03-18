@@ -4,10 +4,10 @@ var filmsPerActor; //expansion edges per node
 var filmMethod;
 var rootNodes;
 var lastSelected;
-
-var degCent = cy.elements().degreeCentrality({});
+var animateGraph;
 
 function setLayout() {
+    animateGraph = $("#animate").is(':checked');
     var options;
     switch ($('input[name="gLayout"]:checked').val()) {
         case "concentric" :
@@ -31,7 +31,7 @@ function setLayout() {
                 levelWidth: function( nodes ){ // the variation of concentric values in each level
                     return nodes.maxDegree() / 4;
                 },
-                animate: true, // whether to transition the node positions
+                animate: animateGraph, // whether to transition the node positions
                 animationDuration: 500, // duration of animation in ms if enabled
                 animationEasing: undefined, // easing of animation if enabled
                 ready: undefined, // callback on layoutready
@@ -52,7 +52,7 @@ function setLayout() {
                 sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
                 clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
                 sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-                animate: true, // whether to transition the node positions
+                animate: animateGraph, // whether to transition the node positions
                 animationDuration: 500, // duration of animation in ms if enabled
                 animationEasing: undefined, // easing of animation if enabled
                 ready: undefined, // callback on layoutready
@@ -74,7 +74,7 @@ function setLayout() {
                 cols: undefined, // force num of columns in the grid
                 position: function( node ){}, // returns { row, col } for element
                 sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-                animate: true, // whether to transition the node positions
+                animate: animateGraph, // whether to transition the node positions
                 animationDuration: 500, // duration of animation in ms if enabled
                 animationEasing: undefined, // easing of animation if enabled
                 ready: undefined, // callback on layoutready
@@ -95,7 +95,7 @@ function setLayout() {
                 avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
                 roots: undefined, // the roots of the trees
                 maximalAdjustments: 0, // how many times to try to position the nodes in a maximal way (i.e. no backtracking)
-                animate: false, // whether to transition the node positions
+                animate: animateGraph, // whether to transition the node positions
                 animationDuration: 500, // duration of animation in ms if enabled
                 animationEasing: undefined, // easing of animation if enabled
                 ready: undefined, // callback on layoutready

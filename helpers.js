@@ -209,8 +209,8 @@ function decomposeObjArray(arr) {
 }
 
 function recenter() {
-    cy.fit(cy.elements());
     setLayout();
+    cy.fit(cy.elements());
 }
 
 function getStats() {
