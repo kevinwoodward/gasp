@@ -38,7 +38,7 @@ function addEdge(id, name, source, dest) {
     });
 }
 
-function addRootNodes(id) {
+function addRootNode(id) {
     $.ajax({
         url: 'http://imdb.wemakesites.net/api/' + id,
         crossDomain: true,
@@ -192,7 +192,7 @@ function crossCheckNode(nodeObj) {
                     try {
                         addEdge(tempEdge, null, tempNode1, tempNode2);
                     } catch (e) {
-                        //TODO: handle e
+                        //do nothing
                     }
                 }
             }
@@ -213,7 +213,45 @@ function recenter() {
     cy.fit(cy.elements());
 }
 
-function getStats() {
-    console.log(cy);
-    console.log(JSON.stringify(cy._private));
+function chooseLock(val) {
+    if(val == "drag") {
+        cy.autolock(false);
+    } else {
+        cy.autolock(true);
+    }
 }
+
+/*function parseInitialInputs(num) {
+    //goal: root nodes from actor name to tag.
+
+    //for(var i = 0; i < rootNodes.length; i++) {
+        var temp = rootNodes[num];
+        $.ajax({
+            url: "http://imdb.wemakesites.net/api/search?="
+            ,
+            data: {
+                api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2',
+                q: temp
+            },
+            crossDomain: true,
+            dataType: "jsonp",
+            success: function(response) {
+                console.log("success for " + temp);
+                var names = response.data.results.names;
+                for(var j = 0; j < names.length; j++) {
+                    console.log(temp);
+                    console.log(names[j].title);
+                    if(names[j].title.trim().toUpperCase().replace(/\s+/g, '') == temp) {
+                        temp = names[j].id;
+                        if(rootNodes.indexOf(temp)+1 < rootNodes.length){
+                            parseInitialInputs(rootNodes.indexOf(temp)+1);
+                        }
+                        addRootNode(temp);
+                        console.log("changing a name");
+                        break;
+                    }
+                }
+            }
+        });
+    //}
+}*/

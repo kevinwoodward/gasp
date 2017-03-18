@@ -5,11 +5,34 @@ var filmMethod;
 var rootNodes;
 var lastSelected;
 var animateGraph;
+var colorScale = [
+    "#4412AE",
+    "#2012AE",
+    "#1127AF",
+    "#104CB0",
+    "#0F71B1",
+    "#0E98B2",
+    "#0DB3A7",
+    "#0CB481",
+    "#0BB55A",
+    "#0AB631",
+    "#09B609",
+    "#31B708",
+    "#5AB807",
+    "#83B906",
+    "#AEBA05",
+    "#BB9D04",
+    "#BC7203",
+    "#BD4702",
+    "#BE1B01",
+    "#BF0011"
+];
 
 function setLayout() {
     animateGraph = $("#animate").is(':checked');
     var options;
-    switch ($('input[name="gLayout"]:checked').val()) {
+    console.log($('#gLayout').val());
+    switch ($('#gLayout').val()) {
         case "concentric" :
             options = {
                 name: 'concentric',
@@ -51,28 +74,6 @@ function setLayout() {
                 startAngle: 3 / 2 * Math.PI, // where nodes start in radians
                 sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
                 clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-                sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-                animate: animateGraph, // whether to transition the node positions
-                animationDuration: 500, // duration of animation in ms if enabled
-                animationEasing: undefined, // easing of animation if enabled
-                ready: undefined, // callback on layoutready
-                stop: undefined // callback on layoutstop
-            };
-            break;
-
-        case "grid":
-            options = {
-                name: 'grid',
-
-                fit: false, // whether to fit the viewport to the graph
-                padding: 30, // padding used on fit
-                boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-                avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
-                avoidOverlapPadding: 10, // extra spacing around nodes when avoidOverlap: true
-                condense: false, // uses all available space on false, uses minimal space on true
-                rows: undefined, // force num of rows in the grid
-                cols: undefined, // force num of columns in the grid
-                position: function( node ){}, // returns { row, col } for element
                 sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
                 animate: animateGraph, // whether to transition the node positions
                 animationDuration: 500, // duration of animation in ms if enabled
