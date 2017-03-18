@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>placeholder</title>
+    <title>IMDb Graph Generator</title>
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src='cytoscape.js'></script>
     <script src="jquery-3.1.1.min.js"></script>
@@ -16,8 +16,16 @@
                 <input type="radio" name="filmChoice" value="new"> Newer
                 <input type="radio" name="filmChoice" value="old"> Older
             </form><br>
+            Graph layout:
+            <form style="display: inline; background: lightgray;" onclick="setLayout();">
+                <input type="radio" name="gLayout" value="concentric" checked> Concentric
+                <input type="radio" name="gLayout" value="circular"> Circular
+                <input type="radio" name="gLayout" value="grid"> Grid
+                <input type="radio" name="gLayout" value="breadthfirst"> Breadthfirst
+            </form><br>
             How many branching edges per node? <input id="edgeNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="3"><br>
-            Graph scale factor: <input id="scaleNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value = "20">
+            Graph scale factor: <input id="scaleNum" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value = "20"><br>
+            <button onclick="recenter();">Recenter</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="getStats();">Statistics on current graph</button>
         </div>
 
 

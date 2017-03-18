@@ -5,20 +5,22 @@ function addNode(response, edge) {
         group: "nodes",
         data: {
             id: response.data.id,
-            name: response.data.title.replace(/\s+/g, '_'),
+            name: response.data.title.replace(/\s+/g, " "),
             films: response.data.filmography,
             hitCount: 1
         },
         position: { x: (screen.width)/2, y: (screen.height)/2}
     };
     cy.add(nodeObj);
+    crossCheckNode(nodeObj);
+    setLayout();
     if(edge != undefined) {
         addEdge(edge.id, edge.name, edge.source, edge.target);
-        setLayout();
+        cleanGraph();
     }
     //actorsArray.push(nodeObj);
     if(layerCount < layerScale) {
-        expandOnNode1(response);
+        getConnectingFilm(response);
     } else {
         updateSub();
         return;
@@ -51,7 +53,7 @@ function addRootNodes(id) {
     });
 }
 
-var expandOnNode1 = function (sourceActorResponse) {
+function getConnectingFilm(sourceActorResponse) {
     //TODO: given actor obj, get connecting edge film(s) and actor for each film
     for(var i = 0; i < filmsPerActor; i++) {
         var filmNum;
@@ -106,7 +108,6 @@ function getResourceIdByName(newActor, sourceActorResponse, filmResponse) {
             var names = response.data.results.names;
             for(var i = 0; i < names.length; i++) {
                 if(names[i].title.trim().toUpperCase().replace(/\s+/g, '') == newActor.trim().toUpperCase().replace(/\s+/g, '')) {
-                    //return names[i];//TODO: instead of return names, continue doing stuff.
                     getNewActorData(names[i].id, sourceActorResponse, filmResponse);
                     break;
                 }
@@ -156,37 +157,63 @@ function addNewNodeAndEdge(newActorResponse, sourceActorResponse, filmResponse) 
 }
 
 function updateSub() {
-    console.log($.active);
-    $('button').prop('disabled', $.active > 1);
+    $('#go').prop('disabled', $.active > 1);
 }
 
-function setLayout() {
-    var options = {
-        name: 'concentric',
-
-        fit: true, // whether to fit the viewport to the graph
-        padding: 30, // the padding on fit
-        startAngle: 3 / 2 * Math.PI, // where nodes start in radians
-        sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
-        clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-        equidistant: false, // whether levels have an equal radial distance betwen them, may cause bounding box overflow
-        minNodeSpacing: 10, // min spacing between outside of nodes (used for radius adjustment)
-        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-        avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
-        height: undefined, // height of layout area (overrides container height)
-        width: undefined, // width of layout area (overrides container width)
-        concentric: function( node ){ // returns numeric value for each node, placing higher nodes in levels towards the centre
-            return node.degree();
-        },
-        levelWidth: function( nodes ){ // the variation of concentric values in each level
-            return nodes.maxDegree() / 4;
-        },
-        animate: true, // whether to transition the node positions
-        animationDuration: 500, // duration of animation in ms if enabled
-        animationEasing: undefined, // easing of animation if enabled
-        ready: undefined, // callback on layoutready
-        stop: undefined // callback on layoutstop
-    };
-    cy.layout(options);
+function cleanGraph() {
+    ////"node[[degree = 0]][id !*= "nm0000115nm0000434nm0000158"]"
+    for(var i = 0; i < rootNodes.length; i++) {
+        if(cy.elements("node[[degree = 0]][id = \'"+rootNodes[i]+"\']").length > 0) {
+            return;
+        }
+    }
+    cy.remove(cy.elements("node[[degree = 0]]"))
 }
 
+function crossCheckNode(nodeObj) {
+    cy.nodes().forEach(function( ele ){
+        if(ele._private.data.id == nodeObj.data.id){
+            return true;
+        }
+        //console.log(ele._private.data.films);
+        var eFilms = ele._private.data.films;
+        var nFilms = nodeObj.data.films;
+        var DeFilms = decomposeObjArray(eFilms);
+        var DnFilms = decomposeObjArray(nFilms);
+        var filtered = DeFilms.filter(function(n) {
+            return DnFilms.indexOf(n) !== -1;
+        });
+        if(filtered.length != 0) {
+            for (var i = 0; i < filtered.length; i++) {
+                var tempEdge = filtered[i].split("/")[4];
+                var tempNode1 = nodeObj.data.id;
+                var tempNode2 = ele._private.data.id;
+                if (cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode1 + "\'][dest = \'" + tempNode2 + "\']") && cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode2 + "\'][dest = \'" + tempNode1 + "\']")) {
+                    try {
+                        addEdge(tempEdge, null, tempNode1, tempNode2);
+                    } catch (e) {
+                        //TODO: handle e
+                    }
+                }
+            }
+        }
+    });
+}
+
+function decomposeObjArray(arr) {
+    var ret = [];
+    for(var i = 0; i < arr.length; i++) {
+        ret.push(arr[i].info);
+    }
+    return ret;
+}
+
+function recenter() {
+    cy.fit(cy.elements());
+    setLayout();
+}
+
+function getStats() {
+    console.log(cy);
+    console.log(JSON.stringify(cy._private));
+}
