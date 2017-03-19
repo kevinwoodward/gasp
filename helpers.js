@@ -76,15 +76,33 @@ function getConnectingFilm(sourceActorResponse) {
             dataType: 'jsonp',
             success: function(response) {
                 //TODO:pass film data and source actor to function to find an actor. Create actor node and edge between source actor and new actor.
-                expandOnNode2(sourceActorResponse, response)
+                chooseActor(sourceActorResponse, response)
             }
         })
     }
 };
 
-function expandOnNode2(sourceActorResponse, filmResponse) {
+function chooseActor(sourceActorResponse, filmResponse) {
     //TODO: pick new actor from film, ajax get data, create node and edge
-    var newActor = filmResponse.data.cast[Math.round((filmResponse.data.cast.length*Math.random()))]; //TODO: NOT 1!
+    var newActor;
+    var lower, higher, selected;
+    if(actorChoiceStyle == "random") {
+        newActor = filmResponse.data.cast[Math.round((filmResponse.data.cast.length*Math.random()))];
+    } else if(actorChoiceStyle == "low") {
+        lower = filmResponse.data.cast.length - 1;
+        higher = (filmResponse.data.cast.length - 1) * 0.9;
+        selected = Math.round(Math.random() * (higher - lower) + lower);
+        newActor = filmResponse.data.cast[selected];
+    } else if(actorChoiceStyle == "high") {
+        lower = (filmResponse.data.cast.length - 1) * 0.1;
+        higher = 0;
+        selected = Math.round(Math.random() * (higher - lower) + lower);
+        newActor = filmResponse.data.cast[selected];
+    }
+    if(sourceActorResponse.data.title == newActor) {
+        chooseActor(sourceActorResponse, filmResponse);
+        return;
+    }
     if(newActor == undefined || newActor == null) {
         return;
     }
@@ -133,11 +151,7 @@ function getNewActorData(newActorID, sourceActorResponse, filmResponse) {
                 try {
                     addNewNodeAndEdge(response, sourceActorResponse, filmResponse);
                 } catch (e) {
-                    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    console.log(e);
-                    console.log(response);
-                    console.log("Most likely this is thrown due to a small filmography of this actor");
-                    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    //fail silently (duplicate)
                 }
             }
         }

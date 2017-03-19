@@ -2,6 +2,7 @@ var layerScale;
 var layerCount = 0;
 var filmsPerActor; //expansion edges per node
 var filmMethod;
+var actorChoiceStyle;
 var rootNodes;
 var lastSelected;
 var animateGraph;
@@ -31,7 +32,6 @@ var colorScale = [
 function setLayout() {
     animateGraph = $("#animate").is(':checked');
     var options;
-    console.log($('#gLayout').val());
     switch ($('#gLayout').val()) {
         case "concentric" :
             options = {

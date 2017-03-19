@@ -9,6 +9,7 @@ function construct() {
     filmsPerActor = $('#edgeNum')[0].value;
     layerScale = $('#scaleNum')[0].value;
     filmMethod = $('#filmChoice').val();
+    actorChoiceStyle = $("#actorChoice").val();
     animateGraph = $("#animate").is(':checked');
     setLayout();
     for(var n = 0; n < rootNodes.length; n++) {

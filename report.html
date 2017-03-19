@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<title>Proj Report</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+    .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+    .fa-anchor,.fa-coffee {font-size:200px}
+</style>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-gray w3-card-2 w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-gray" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+        <a href="gen.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Program</a>
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Documentation</a>
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Writeup</a>
+        <a href="./" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Source</a>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="w3-container w3-gray w3-center w3-padding-128">
+    <h1 class="w3-margin">Accurately Sampled Graph Visualization of IMDb Data</h1>
+    <p class="w3-xlarge">Kevin Woodward, keawoodw@ucsc.edu</p>
+    <p class="w3-xlarge">CMPS161, Alex Pang, Winter 2017</p>
+</header>
+
+<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
+    <div class="w3-content">
+        <div class="w3-onethird">
+
+        </div>
+    </div>
+</div>
+
+<!-- First Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+    <div class="w3-content">
+        <div class="w3-full">
+            <h1>Project Information</h1>
+            <h5 class="w3-padding-16">
+                This project is a graph-based intuitive interface for exploring connections between a sample of actors and films defined by the user. This tool was then used to determine what quality or qualities are best to sample root actors by for a diverse graph, as well as how to branch to new actors and films.
+            </h5>
+            <h5>
+                <b>User guide:</b><br>Fill the text field out with tags of actors, separated by commas. A tag is the unique ID in each IMDb actor URL which follows /name/. For example, the URL for Jeff Goldblum is http://www.imdb.com/name/nm0000156/, so the corresponding tag is nm0000156. From here, a graph can be generated or the graph options can be modified.<br><br>
+                <p style="margin-left: 50px"><u>Options</u><br><br>-The first dropdown menu sets the preference on how the search algorithm will choose a film from the filmography of a given actor. The options are newer, older, randomly.<br>-The second dropdown menu sets the preference on how the search algorithm will choose an actor from a given film. The options are high billing, low billing, and randomly.<br>-The third dropdown menu is the layout of the graph as it is generated. The options are concentric (by degree outward), circular, and breadthfirst.<br>-The fourth dropdown menu determines the action when a node is clicked. The options are opening the related IMDb page in a new tab, dragging the nodes, or performing one of three algorithms with the selected node as the source.<br>-The animate graph checkbox can be unchecked for higher performance with larger graph sizes.<br>-The branching edges input field allows a modification of how many films (edges) will be added per node.<br>-The graph scale factor input is the limiting factor for the size of the graph, determined by a combination of search depth from the root nodes as well as total node count. Note that this scales noticeably to time and performance.<br>-Recenter simply centers and fits the graph to the viewbox.</p>
+            </h5>
+            <h5>
+                <b>Details:</b><br>The general flow of the program is to take the source actors and recursively expand on each through a long series of GETs and callbacks while periodically cross checking nodes for edges and fulfilling the options selected. All of the information gathered during a generation is stored in a single object managed by Cytoscape.js. <br><br>This project utilizes several libraries. Cytoscape.js is used for graph manipulation, organization, visualization, and graph based algorithms. RESTful JSON API for IMDb is used for requesting info about an actor or film using IMDb tags. In turn, this uses the IMDb alternative interfaces as reference. jQuery is used for ajax GETs as well as simple DOM manipulation. W3 templates are used for this document. Related works include several papers listed below.
+            </h5>
+            <h5>
+                <b>References and Related Works:</b><br>
+                <a href="http://js.cytoscape.org/" style="color: blue">Cytoscape</a><br>
+                <a href="http://imdb.wemakesites.net/" style="color: blue">RESTful JSON API for IMDb</a><br>
+                <a href="http://www.imdb.com/interfaces" style="color: blue">IMDb Interfaces</a><br>
+                <a href="https://jquery.com/" style="color: blue">jQuery</a><br>
+                <a href="https://www.w3schools.com/w3css/w3css_templates.asp" style="color: blue">W3 CSS <Templates></Templates></a><br><br>
+                <a href="http://www.stat.cmu.edu/~fienberg/Stat36-835/Leskovec-sampling-kdd06.pdf" style="color: blue">Paper on graph sampling</a><br>
+                <a href="http://www.openproceedings.org/2011/conf/edbt/NobariLKB11.pdf" style="color: blue">Paper on fast graph generation</a>
+            </h5>
+
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Second Grid -->
+
+
+<div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
+    <h1 class="w3-margin w3-xlarge">Quote of the day: live life</h1>
+</div>
+
+
+<script>
+    // Used to toggle the menu on small screens when clicking on the menu button
+    function myFunction() {
+        var x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+        } else {
+            x.className = x.className.replace(" w3-show", "");
+        }
+    }
+</script>
+
+</body>
+</html>

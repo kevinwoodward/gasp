@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>IMDb Graph Generator</title>
-    <link rel="stylesheet" type="text/css" href="index.css">
+    <link rel="stylesheet" type="text/css" href="gen.css">
     <script src='cytoscape.js'></script>
     <script src="jquery-3.1.1.min.js"></script>
 </head>
@@ -15,6 +15,12 @@
                 <option value="random">Randomly</option>
                 <option value="new">Newer</option>
                 <option value="old">Older</option>
+            </select><br>
+            How do you want to select actors from a cast?
+            <select style="display: inline;" id="actorChoice">
+                <option value="random">Randomly</option>
+                <option value="high">High Billing</option>
+                <option value="low">Low Billing</option>
             </select><br>
             Graph layout:
             <select style="display: inline;" id="gLayout" onchange="setLayout();recenter();">
