@@ -1,11 +1,11 @@
-var layerScale;
-var layerCount = 0;
+var layerScale; //scalar
+var layerCount = 0; //counter
 var filmsPerActor; //expansion edges per node
-var filmMethod;
-var actorChoiceStyle;
-var rootNodes;
-var lastSelected;
-var animateGraph;
+var filmMethod; //html var
+var actorChoiceStyle; //html var
+var rootNodes; //html var
+var lastSelected; //html var
+var animateGraph; //html var
 var colorScale = [
     "#4412AE",
     "#2012AE",
@@ -27,11 +27,12 @@ var colorScale = [
     "#BD4702",
     "#BE1B01",
     "#BF0011"
-];
+]; //color scale for algs
 
 function setLayout() {
-    animateGraph = $("#animate").is(':checked');
+    animateGraph = $('#animate').prop('checked');
     var options;
+    //switch options based on dropdown
     switch ($('#gLayout').val()) {
         case "concentric" :
             options = {
@@ -106,5 +107,5 @@ function setLayout() {
 
     }
 
-    cy.layout(options);
+    cy.layout(options); //apply layout
 }

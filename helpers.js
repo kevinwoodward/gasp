@@ -1,4 +1,3 @@
-//id is the unique value, so associated to nm0000115 tag.
 function addNode(response, edge) {
     layerCount++;
     var nodeObj = {
@@ -11,31 +10,31 @@ function addNode(response, edge) {
         },
         position: { x: (screen.width)/2, y: (screen.height)/2}
     };
-    cy.add(nodeObj);
-    crossCheckNode(nodeObj);
-    setLayout();
+    cy.add(nodeObj); //add to graph obj
+    crossCheckNode(nodeObj); //check new node with all other nodes
+    setLayout(); //update layout
     if(edge != undefined) {
-        addEdge(edge.id, edge.name, edge.source, edge.target);
-        cleanGraph();
+        addEdge(edge.id, edge.name, edge.source, edge.target); //add related edge if not duplicate
+        cleanGraph(); //clean extraneous values
     }
     //actorsArray.push(nodeObj);
     if(layerCount < layerScale) {
-        getConnectingFilm(response);
+        getConnectingFilm(response); //get film from node
     } else {
-        updateSub();
-        return;
+        updateSub(); //on end
     }
 }
 
 function addEdge(id, name, source, dest) {
     if(cy.getElementById(id) == undefined) {
-        cy.getElementById(id).width += 10;
         return;
     }
-    cy.add({
-        group: "edges",
-        data: {id: id, name: name, source: source, target: dest}
-    });
+    try {
+        cy.add({
+            group: "edges",
+            data: {id: id, name: name, source: source, target: dest}
+        }); //add to graph obj
+    } catch (e){}
 }
 
 function addRootNode(id) {
@@ -48,16 +47,15 @@ function addRootNode(id) {
         dataType: 'jsonp',
         success: function(response) {
             addNode(response, undefined);
-
         }
-    });
+    }); //make call to api for info
 }
 
 function getConnectingFilm(sourceActorResponse) {
-    //TODO: given actor obj, get connecting edge film(s) and actor for each film
+    //given actor obj, get connecting edge film(s) and actor for each film
     for(var i = 0; i < filmsPerActor; i++) {
         var filmNum;
-        //choose which films
+        //choose which films based on options
         if (filmMethod == "random") {
             filmNum = Math.round(Math.random() * sourceActorResponse.data.filmography.length);
         } else if (filmMethod == "new") {
@@ -66,7 +64,7 @@ function getConnectingFilm(sourceActorResponse) {
             filmNum = sourceActorResponse.data.filmography.length - i - 1;
         }
 
-        var filmID = sourceActorResponse.data.filmography[filmNum].info.split("/")[4]; //TODO: add logic for which films to pick.
+        var filmID = sourceActorResponse.data.filmography[filmNum].info.split("/")[4]; //get unique id from url
         $.ajax({
             url: 'http://imdb.wemakesites.net/api/' + filmID,
             crossDomain: true,
@@ -78,14 +76,15 @@ function getConnectingFilm(sourceActorResponse) {
                 //TODO:pass film data and source actor to function to find an actor. Create actor node and edge between source actor and new actor.
                 chooseActor(sourceActorResponse, response)
             }
-        })
+        }); //get info about film
     }
-};
+}
 
 function chooseActor(sourceActorResponse, filmResponse) {
-    //TODO: pick new actor from film, ajax get data, create node and edge
+    //pick new actor from film, get data, create node and edge
     var newActor;
     var lower, higher, selected;
+    //get method for selection based on options
     if(actorChoiceStyle == "random") {
         newActor = filmResponse.data.cast[Math.round((filmResponse.data.cast.length*Math.random()))];
     } else if(actorChoiceStyle == "low") {
@@ -100,13 +99,13 @@ function chooseActor(sourceActorResponse, filmResponse) {
         newActor = filmResponse.data.cast[selected];
     }
     if(sourceActorResponse.data.title == newActor) {
-        chooseActor(sourceActorResponse, filmResponse);
+        chooseActor(sourceActorResponse, filmResponse); //if same actor as source
         return;
     }
     if(newActor == undefined || newActor == null) {
-        return;
+        return; //if bad response
     }
-    newActor = newActor.replace(/\s+/g, '');
+    newActor = newActor.replace(/\s+/g, ''); //format for reverse search
     getResourceIdByName(newActor, sourceActorResponse, filmResponse);
 
 
@@ -123,6 +122,7 @@ function getResourceIdByName(newActor, sourceActorResponse, filmResponse) {
         crossDomain: true,
         dataType: "jsonp",
         success: function(response) {
+            //essentially do a search by name, choose result with exact name searched.
             var names = response.data.results.names;
             for(var i = 0; i < names.length; i++) {
                 if(names[i].title.trim().toUpperCase().replace(/\s+/g, '') == newActor.trim().toUpperCase().replace(/\s+/g, '')) {
@@ -146,13 +146,9 @@ function getNewActorData(newActorID, sourceActorResponse, filmResponse) {
             if(sourceActorResponse.data.id == response.data.id) {
                 cy.getElementById(response.data.id).hitCount += 1;
             } else {
-                //console.log(response);
-
                 try {
                     addNewNodeAndEdge(response, sourceActorResponse, filmResponse);
-                } catch (e) {
-                    //fail silently (duplicate)
-                }
+                } catch (e) {}
             }
         }
     })
@@ -164,10 +160,8 @@ function addNewNodeAndEdge(newActorResponse, sourceActorResponse, filmResponse) 
         name: filmResponse.data.title,
         source: sourceActorResponse.data.id,
         target: newActorResponse.data.id
-    };
+    }; //set up edge obj to be added
     addNode(newActorResponse, edgeObj);
-
-    //addEdge(filmResponse.data.id, filmResponse.data.title, sourceActorResponse.data.id, newActorResponse.data.id);
 }
 
 function updateSub() {
@@ -175,27 +169,26 @@ function updateSub() {
 }
 
 function cleanGraph() {
-    ////"node[[degree = 0]][id !*= "nm0000115nm0000434nm0000158"]"
     for(var i = 0; i < rootNodes.length; i++) {
         if(cy.elements("node[[degree = 0]][id = \'"+rootNodes[i]+"\']").length > 0) {
+            //if any root nodes have degree 0, return
             return;
         }
     }
-    cy.remove(cy.elements("node[[degree = 0]]"))
+    cy.remove(cy.elements("node[[degree = 0]]")); //else remove nodes deg 0
 }
 
 function crossCheckNode(nodeObj) {
     cy.nodes().forEach(function( ele ){
         if(ele._private.data.id == nodeObj.data.id){
-            return true;
+            return true; //allows handler to iterate to next node
         }
-        //console.log(ele._private.data.films);
-        var eFilms = ele._private.data.films;
-        var nFilms = nodeObj.data.films;
-        var DeFilms = decomposeObjArray(eFilms);
-        var DnFilms = decomposeObjArray(nFilms);
+        var eFilms = ele._private.data.films; //films for iterating node
+        var nFilms = nodeObj.data.films; //films for passed node
+        var DeFilms = decomposeObjArray(eFilms); //make array of objs into array of strings for array intersection calc
+        var DnFilms = decomposeObjArray(nFilms); //make array of objs into array of strings for array intersection calc
         var filtered = DeFilms.filter(function(n) {
-            return DnFilms.indexOf(n) !== -1;
+            return DnFilms.indexOf(n) !== -1; //intersection of both arrays
         });
         if(filtered.length != 0) {
             for (var i = 0; i < filtered.length; i++) {
@@ -203,11 +196,10 @@ function crossCheckNode(nodeObj) {
                 var tempNode1 = nodeObj.data.id;
                 var tempNode2 = ele._private.data.id;
                 if (cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode1 + "\'][dest = \'" + tempNode2 + "\']") && cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode2 + "\'][dest = \'" + tempNode1 + "\']")) {
+                    //if edge doesn't exist already
                     try {
                         addEdge(tempEdge, null, tempNode1, tempNode2);
-                    } catch (e) {
-                        //do nothing
-                    }
+                    } catch (e) {}
                 }
             }
         }
@@ -223,8 +215,8 @@ function decomposeObjArray(arr) {
 }
 
 function recenter() {
-    setLayout();
-    cy.fit(cy.elements());
+    setLayout(); //reconfigures nodes
+    cy.fit(cy.elements()); //fit to viewport
 }
 
 function chooseLock(val) {
