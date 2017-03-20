@@ -22,6 +22,8 @@ function addNode(response, edge) {
         getConnectingFilm(response); //get film from node
     } else {
         updateSub(); //on end
+        console.log("Graph Object:");
+        console.log(cy); //output graph obj
     }
 }
 

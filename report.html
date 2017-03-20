@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Proj Report</title>
+<title>Project Report</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
@@ -18,14 +18,13 @@
     <div class="w3-bar w3-gray w3-card-2 w3-left-align w3-large">
         <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-gray" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
         <a href="gen.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Program</a>
-        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Writeup</a>
+        <a href="FinalProjectTechnicalPaper.pdf" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Writeup</a>
         <a href="./" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Source</a>
-        <a href="https://github.com/kevinwoodward/gasp" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Github</a>
     </div>
 </div>
 
 <header class="w3-container w3-gray w3-center w3-padding-64">
-    <h1 class="w3-margin">Accurately Sampled Graph Visualizations of IMDb Data</h1>
+    <h1 class="w3-margin">Graph Visualizations of IMDb Data</h1>
     <p class="w3-xlarge">Kevin Woodward, keawoodw@ucsc.edu</p>
     <p class="w3-xlarge">CMPS161, Alex Pang, Winter 2017</p>
 </header>
@@ -54,7 +53,7 @@
                 <p style="margin-left: 50px"><u>Options</u><br><br>-The first dropdown menu sets the preference on how the search algorithm will choose a film from the filmography of a given actor. The options are newer, older, randomly.<br>-The second dropdown menu sets the preference on how the search algorithm will choose an actor from a given film. The options are high billing, low billing, and randomly.<br>-The third dropdown menu is the layout of the graph as it is generated. The options are concentric (by degree outward), circular, and breadthfirst.<br>-The fourth dropdown menu determines the action when a node is clicked. The options are opening the related IMDb page in a new tab, dragging the nodes, or performing one of three algorithms with the selected node as the source. Edges will always open the related film page.<br>-The animate graph checkbox can be unchecked for higher performance with larger graph sizes.<br>-The branching edges input field allows a modification of how many films (edges) will be added per node.<br>-The graph scale factor input is the limiting factor for the size of the graph, determined by a combination of search depth from the root nodes as well as total node count. Note that this scales noticeably to time and performance.<br>-Recenter simply centers and fits the graph to the viewbox.</p>
             </h5>
             <h5>
-                <b>Details:</b><br>The general flow of the program is to take the source actors and recursively expand on each through a long series of GETs and callbacks while periodically cross checking nodes for edges and fulfilling the options selected. All of the information gathered during a generation is stored in a single object managed by Cytoscape.js. <br><br>This project utilizes several libraries. Cytoscape.js is used for graph manipulation, organization, visualization, and graph based algorithms. RESTful JSON API for IMDb is used for requesting info about an actor or film using IMDb tags. In turn, this uses the IMDb alternative interfaces as reference. jQuery is used for ajax GETs as well as simple DOM manipulation. W3 templates are used for this document. Related works include several papers listed below.
+                <b>Details:</b><br>The general flow of the program is to take the source actors and recursively expand on each through a long series of GETs and callbacks while periodically cross checking nodes for edges while fulfilling the options selected. All of the information gathered during a generation is stored in a single object managed by Cytoscape.js. <br><br>This project utilizes several libraries. Cytoscape.js is used for graph manipulation, organization, visualization, and graph based algorithms. RESTful JSON API for IMDb is used for requesting info about an actor or film using IMDb tags. In turn, this uses the IMDb alternative interfaces as reference. jQuery is used for ajax GETs as well as simple DOM manipulation. W3 templates are used for this document. Related works include several papers listed below.
             </h5>
             <h5>
                 <b>References and Related Works:</b><br>
