@@ -1,0 +1,49 @@
+UC Santa Cruz Mail	Kevin Woodward <keawoodw@ucsc.edu>
+Re: IMDb API
+8 messages
+Martin Ivanov <acid_martin@yahoo.com>	Wed, Mar 22, 2017 at 12:33 AM
+Reply-To: "acid_martin@yahoo.com" <acid_martin@yahoo.com>
+To: Kevin Woodward <keawoodw@ucsc.edu>
+Hi Kevin,
+
+Recently I received a cease and desist notice from IMDb, so I had to stop the API. Unfortunately I don't have any plans of restoring it due to legal reasons, so I guess you have to look for other options.
+
+Sorry for the inconvenience and kind regards,
+Martin
+
+Sent from Yahoo Mail on Android
+
+On Wed, Mar 22, 2017 at 7:52, Kevin Woodward
+<keawoodw@ucsc.edu> wrote:
+Hi, I have been using your IMDb API as an integral tool in my university project, and I noticed that the site is down (403) and my requests are returning 404. Is this intentional or only temporary? I appreciate your work and response. Thanks, Kevin Woodward
+Kevin Woodward <keawoodw@ucsc.edu>	Wed, Mar 22, 2017 at 12:34 AM
+To: Aakash Thakkar <aakash@ucsc.edu>, Alex Pang <pang@soe.ucsc.edu>
+Regarding the creator of the API and why it is down
+[Quoted text hidden]
+Kevin Woodward <keawoodw@ucsc.edu>	Wed, Mar 22, 2017 at 12:37 AM
+To: "acid_martin@yahoo.com" <acid_martin@yahoo.com>
+That is understandable. Is the API open source? My university term ends this week and for grading purposes I would be incredibly grateful if there would be some way I could obtain access to a private version for personal use, git repo or anything of that nature. 
+
+Thanks again,
+
+Kevin Woodward
+[Quoted text hidden]
+Martin Ivanov <acid_martin@yahoo.com>	Wed, Mar 22, 2017 at 1:19 AM
+Reply-To: Martin Ivanov <acid_martin@yahoo.com>
+To: Kevin Woodward <keawoodw@ucsc.edu>
+Hi Kevin,
+
+I cannot give you the code just because these legal issues, but there are a few other IMDb APIs, which are actually pretty good. You can check on Google.
+
+Kind regards,
+Martin
+ 
+portfolio
+blog
+
+
+From: Kevin Woodward <keawoodw@ucsc.edu>
+To: "acid_martin@yahoo.com" <acid_martin@yahoo.com> 
+Sent: Wednesday, March 22, 2017 8:37 AM
+Subject: Re: IMDb API
+[Quoted text hidden]

@@ -1,5 +1,8 @@
 var layerScale; //scalar
 var layerCount = 0; //counter
+var pendingReqs = 0;
+var maxReqs = 35;
+var nextPass = [];
 var filmsPerActor; //expansion edges per node
 var filmMethod; //html var
 var actorChoiceStyle; //html var

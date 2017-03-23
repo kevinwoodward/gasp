@@ -3,9 +3,10 @@ function addNode(response, edge) {
     var nodeObj = {
         group: "nodes",
         data: {
-            id: response.data.id,
-            name: response.data.title.replace(/\s+/g, " "),
-            films: response.data.filmography,
+            id: response.imdb_id,
+            tmdb_id: response.id,
+            name: response.name.replace(/\s+/g, " "),
+            films: response.movie_credits.cast,
             hitCount: 1
         },
         position: { x: (screen.width)/2, y: (screen.height)/2}
@@ -14,7 +15,7 @@ function addNode(response, edge) {
     crossCheckNode(nodeObj); //check new node with all other nodes
     setLayout(); //update layout
     if(edge != undefined) {
-        addEdge(edge.id, edge.name, edge.source, edge.target); //add related edge if not duplicate
+        addEdge(edge.id, edge.tmdb_id, edge.name, edge.source, edge.target); //add related edge if not duplicate
         cleanGraph(); //clean extraneous values
     }
     //actorsArray.push(nodeObj);
@@ -22,33 +23,34 @@ function addNode(response, edge) {
         getConnectingFilm(response); //get film from node
     } else {
         updateSub(); //on end
-        console.log("Graph Object:");
-        console.log(cy); //output graph obj
     }
 }
 
-function addEdge(id, name, source, dest) {
+function addEdge(id, tmdb_id, name, source, dest) {
     if(cy.getElementById(id) == undefined) {
         return;
     }
     try {
         cy.add({
             group: "edges",
-            data: {id: id, name: name, source: source, target: dest}
+            data: {id: id, tmdb_id: tmdb_id, name: name, source: source, target: dest}
         }); //add to graph obj
     } catch (e){}
 }
 
 function addRootNode(id) {
     $.ajax({
-        url: 'http://imdb.wemakesites.net/api/' + id,
+        url: "https://api.themoviedb.org/3/person/" + id + "?api_key=b16adb5f19440fe3c0a37959172ad70b&append_to_response=movie_credits",
         crossDomain: true,
-        data: {
-            api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2'
-        },
         dataType: 'jsonp',
         success: function(response) {
             addNode(response, undefined);
+        },
+        error: function (response) {
+            if(response.status == 404) {
+                console.log(response);
+            }
+            alert("Due to a limitation of 40 requests per 10 seconds on the current API, please wait at least 10 seconds, refresh the page and try again.")
         }
     }); //make call to api for info
 }
@@ -59,26 +61,43 @@ function getConnectingFilm(sourceActorResponse) {
         var filmNum;
         //choose which films based on options
         if (filmMethod == "random") {
-            filmNum = Math.round(Math.random() * sourceActorResponse.data.filmography.length);
-        } else if (filmMethod == "new") {
-            filmNum = i;
+            filmNum = Math.floor(Math.random() * sourceActorResponse.movie_credits.cast.length);
         } else if (filmMethod == "old") {
-            filmNum = sourceActorResponse.data.filmography.length - i - 1;
+            filmNum = i;
+        } else if (filmMethod == "new") {
+            filmNum = sourceActorResponse.movie_credits.cast.length - i - 1;
         }
 
-        var filmID = sourceActorResponse.data.filmography[filmNum].info.split("/")[4]; //get unique id from url
-        $.ajax({
-            url: 'http://imdb.wemakesites.net/api/' + filmID,
-            crossDomain: true,
-            data: {
-                api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2'
-            },
-            dataType: 'jsonp',
-            success: function(response) {
-                //TODO:pass film data and source actor to function to find an actor. Create actor node and edge between source actor and new actor.
-                chooseActor(sourceActorResponse, response)
-            }
-        }); //get info about film
+        var filmID = sourceActorResponse.movie_credits.cast[filmNum].id; //get unique id from url
+        if(pendingReqs > maxReqs) {
+            nextPass.push({
+                func: getConnectingFilm,
+                param1: sourceActorResponse,
+                param2: undefined,
+                param3: undefined
+            });
+            return;
+        } else {
+            pendingReqs++;
+        }
+        try {
+            $.ajax({
+                url: "https://api.themoviedb.org/3/movie/" + filmID + "?api_key=b16adb5f19440fe3c0a37959172ad70b&append_to_response=credits",
+                crossDomain: true,
+                dataType: 'jsonp',
+                success: function (response) {
+                    chooseActor(sourceActorResponse, response)
+                }
+            }); //get info about film
+        } catch (e) {
+            nextPass.push({
+                func: getConnectingFilm,
+                param1: sourceActorResponse,
+                param2: undefined,
+                param3: undefined
+            });
+            return;
+        }
     }
 }
 
@@ -88,69 +107,65 @@ function chooseActor(sourceActorResponse, filmResponse) {
     var lower, higher, selected;
     //get method for selection based on options
     if(actorChoiceStyle == "random") {
-        newActor = filmResponse.data.cast[Math.round((filmResponse.data.cast.length*Math.random()))];
+        newActor = filmResponse.credits.cast[Math.floor((filmResponse.credits.cast.length*Math.random()))];
     } else if(actorChoiceStyle == "low") {
-        lower = filmResponse.data.cast.length - 1;
-        higher = (filmResponse.data.cast.length - 1) * 0.9;
+        lower = filmResponse.credits.cast.length - 1;
+        higher = (filmResponse.credits.cast.length - 1) * 0.9;
         selected = Math.round(Math.random() * (higher - lower) + lower);
-        newActor = filmResponse.data.cast[selected];
+        newActor = filmResponse.credits.cast[selected];
     } else if(actorChoiceStyle == "high") {
-        lower = (filmResponse.data.cast.length - 1) * 0.1;
+        lower = (filmResponse.credits.cast.length - 1) * 0.1;
         higher = 0;
         selected = Math.round(Math.random() * (higher - lower) + lower);
-        newActor = filmResponse.data.cast[selected];
+        newActor = filmResponse.credits.cast[selected];
     }
-    if(sourceActorResponse.data.title == newActor) {
-        chooseActor(sourceActorResponse, filmResponse); //if same actor as source
-        return;
-    }
+    try {
+        if (sourceActorResponse.name == newActor.name) {
+            chooseActor(sourceActorResponse, filmResponse); //if same actor as source
+            return;
+        }
+    } catch (e) {}
     if(newActor == undefined || newActor == null) {
         return; //if bad response
     }
-    newActor = newActor.replace(/\s+/g, ''); //format for reverse search
-    getResourceIdByName(newActor, sourceActorResponse, filmResponse);
+    //newActor = newActor.replace(/\s+/g, ''); //format for reverse search
+    //getResourceIdByName(newActor, sourceActorResponse, filmResponse);
 
-
-}
-
-function getResourceIdByName(newActor, sourceActorResponse, filmResponse) {
-    $.ajax({
-        url: "http://imdb.wemakesites.net/api/search?="
-        ,
-        data: {
-            api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2',
-            q: newActor
-        },
-        crossDomain: true,
-        dataType: "jsonp",
-        success: function(response) {
-            //essentially do a search by name, choose result with exact name searched.
-            var names = response.data.results.names;
-            for(var i = 0; i < names.length; i++) {
-                if(names[i].title.trim().toUpperCase().replace(/\s+/g, '') == newActor.trim().toUpperCase().replace(/\s+/g, '')) {
-                    getNewActorData(names[i].id, sourceActorResponse, filmResponse);
-                    break;
-                }
-            }
-        }
-    });
+    getNewActorData(newActor.id, sourceActorResponse, filmResponse)
 }
 
 function getNewActorData(newActorID, sourceActorResponse, filmResponse) {
+    //return;
+    if(pendingReqs > maxReqs) {
+        nextPass.push({
+            func: getNewActorData,
+            param1: newActorID,
+            param2: sourceActorResponse,
+            param3: filmResponse
+        });
+        return;
+    } else {
+        pendingReqs++;
+    }
     $.ajax({
-        url: 'http://imdb.wemakesites.net/api/' + newActorID,
+        url: "https://api.themoviedb.org/3/person/" + newActorID + "?api_key=b16adb5f19440fe3c0a37959172ad70b&append_to_response=movie_credits",
         crossDomain: true,
-        data: {
-            api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2'
-        },
         dataType: 'jsonp',
         success: function(response) {
-            if(sourceActorResponse.data.id == response.data.id) {
-                cy.getElementById(response.data.id).hitCount += 1;
+            if(sourceActorResponse.id == response.id) {
+                cy.getElementById(response.id).hitCount += 1;
             } else {
                 try {
                     addNewNodeAndEdge(response, sourceActorResponse, filmResponse);
-                } catch (e) {}
+                } catch (e) {
+                    nextPass.push({
+                        func: getNewActorData,
+                        param1: newActorID,
+                        param2: sourceActorResponse,
+                        param3: filmResponse
+                    });
+                    return;
+                }
             }
         }
     })
@@ -158,10 +173,11 @@ function getNewActorData(newActorID, sourceActorResponse, filmResponse) {
 
 function addNewNodeAndEdge(newActorResponse, sourceActorResponse, filmResponse) {
     var edgeObj = {
-        id: filmResponse.data.id,
-        name: filmResponse.data.title,
-        source: sourceActorResponse.data.id,
-        target: newActorResponse.data.id
+        id: filmResponse.imdb_id,
+        tmdb_id: filmResponse.id,
+        name: filmResponse.title,
+        source: sourceActorResponse.imdb_id,
+        target: newActorResponse.imdb_id
     }; //set up edge obj to be added
     addNode(newActorResponse, edgeObj);
 }
@@ -172,7 +188,7 @@ function updateSub() {
 
 function cleanGraph() {
     for(var i = 0; i < rootNodes.length; i++) {
-        if(cy.elements("node[[degree = 0]][id = \'"+rootNodes[i]+"\']").length > 0) {
+        if(cy.elements("node[[degree = 0]][tmdb_id = "+rootNodes[i]+"]").length > 0) {
             //if any root nodes have degree 0, return
             return;
         }
@@ -187,33 +203,32 @@ function crossCheckNode(nodeObj) {
         }
         var eFilms = ele._private.data.films; //films for iterating node
         var nFilms = nodeObj.data.films; //films for passed node
-        var DeFilms = decomposeObjArray(eFilms); //make array of objs into array of strings for array intersection calc
-        var DnFilms = decomposeObjArray(nFilms); //make array of objs into array of strings for array intersection calc
-        var filtered = DeFilms.filter(function(n) {
-            return DnFilms.indexOf(n) !== -1; //intersection of both arrays
-        });
+        var filtered = [];
+        for(var x = 0; x < eFilms.length; x++) {
+            for(var y = 0; y < nFilms.length; y++) {
+                if(eFilms[x].id == nFilms[y].id) {
+                    filtered.push(eFilms[x]);
+                }
+            }
+        }
         if(filtered.length != 0) {
             for (var i = 0; i < filtered.length; i++) {
-                var tempEdge = filtered[i].split("/")[4];
+                var tempEdge = filtered[i].id;
                 var tempNode1 = nodeObj.data.id;
+                var tempName = filtered[i].title;
                 var tempNode2 = ele._private.data.id;
-                if (cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode1 + "\'][dest = \'" + tempNode2 + "\']") && cy.elements("edge[id = \'" + tempEdge+ "\'][source = \'" + tempNode2 + "\'][dest = \'" + tempNode1 + "\']")) {
+                if (cy.elements("edge[source = \'" + tempNode1 + "\'][dest = \'" + tempNode2 + "\']").length == 0 && cy.elements("edge[source = \'" + tempNode2 + "\'][dest = \'" + tempNode1 + "\']").length == 0) {
                     //if edge doesn't exist already
                     try {
-                        addEdge(tempEdge, null, tempNode1, tempNode2);
-                    } catch (e) {}
+                        addEdge("tt"+tempEdge, tempEdge, tempName, tempNode1, tempNode2);
+                        return;
+                    } catch (e) {
+                        console.log("error adding edge")
+                    }
                 }
             }
         }
     });
-}
-
-function decomposeObjArray(arr) {
-    var ret = [];
-    for(var i = 0; i < arr.length; i++) {
-        ret.push(arr[i].info);
-    }
-    return ret;
 }
 
 function recenter() {
@@ -228,38 +243,3 @@ function chooseLock(val) {
         cy.autolock(true);
     }
 }
-
-/*function parseInitialInputs(num) {
-    //goal: root nodes from actor name to tag.
-
-    //for(var i = 0; i < rootNodes.length; i++) {
-        var temp = rootNodes[num];
-        $.ajax({
-            url: "http://imdb.wemakesites.net/api/search?="
-            ,
-            data: {
-                api_key: 'c8a65916-b48d-4d3a-bcac-5641c93337f2',
-                q: temp
-            },
-            crossDomain: true,
-            dataType: "jsonp",
-            success: function(response) {
-                console.log("success for " + temp);
-                var names = response.data.results.names;
-                for(var j = 0; j < names.length; j++) {
-                    console.log(temp);
-                    console.log(names[j].title);
-                    if(names[j].title.trim().toUpperCase().replace(/\s+/g, '') == temp) {
-                        temp = names[j].id;
-                        if(rootNodes.indexOf(temp)+1 < rootNodes.length){
-                            parseInitialInputs(rootNodes.indexOf(temp)+1);
-                        }
-                        addRootNode(temp);
-                        console.log("changing a name");
-                        break;
-                    }
-                }
-            }
-        });
-    //}
-}*/

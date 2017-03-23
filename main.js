@@ -1,4 +1,20 @@
 function construct() {
+    window.setInterval(function(){
+        if(layerCount > layerScale) {
+            return;
+        }
+        pendingReqs = 0;
+        console.log("once every 10 seconds");
+        var i = Math.floor(Math.random() * nextPass.length);
+        nextPass[i].func(
+            nextPass[i].param1,
+            nextPass[i].param2,
+            nextPass[i].param3
+        );
+        nextPass.pop(i);
+
+    }, 10000);
+
     if($.active != 0) {
         alert("Please wait for the current graph to complete, or refresh the page");
         return;
@@ -22,7 +38,8 @@ function construct() {
         cy.edges().style({'line-color': '#666'});
         switch($("#nodeClick").val()) {
             case "link":
-                window.open("http://www.imdb.com/name/" + evt.cyTarget.id() + "/");
+                console.log(evt.cyTarget);
+                window.open("https://www.themoviedb.org/person/" + evt.cyTarget._private.data.tmdb_id);
                 break;
             case "bfs":
                 cy.elements().breadthFirstSearch(
@@ -62,12 +79,13 @@ function construct() {
                 cutObj.cut.style({"line-color" : "#F00"});
                 cutObj.partition1.style({"background-color" : "#0F0"});
                 cutObj.partition2.style({"background-color" : "#00F"});
-                //hidden.restore();
+            //hidden.restore();
         }
 
     });
     cy.on('tap', 'edge', function (evt) {
         //open film page
-        window.open("http://www.imdb.com/title/" + evt.cyTarget.id() + "/");
+        console.log(evt.cyTarget);
+        window.open("https://www.themoviedb.org/movie/" + evt.cyTarget._private.data.tmdb_id);
     });
 }
